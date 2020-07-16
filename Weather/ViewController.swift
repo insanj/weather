@@ -23,7 +23,7 @@ class ViewController: UIViewController {
             navigationItem.prompt = locationTitle
         }
     }
-
+    
     // frontend
     let mapView: MKMapView = {
         let map = MKMapView()
@@ -34,6 +34,8 @@ class ViewController: UIViewController {
     // MARK: - funcs
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        view.backgroundColor = .blue
 
         // initial setup
         title = "Weather"
@@ -65,12 +67,38 @@ extension ViewController {
             locationManager.startUpdatingLocation()
         }
     }
+    
+    func generateTitle(for location: CLLocation,_ callback: @escaping (String) -> (Void)) {
+        let geoCoder = CLGeocoder()
+        geoCoder.reverseGeocodeLocation(location) { (placemarks, error) -> Void in
+            guard let placemark = placemarks?.first else {
+                callback("")
+                return
+            }
+            
+            guard let name = placemark.name, let city = placemark.locality else {
+                callback("")
+                return
+            }
+            
+            let title = "\(name), \(city)"
+            callback(title)
+        }
+    }
+    
+    func clearPins() {
+        mapView.removeAnnotations(mapView.annotations)
+    }
+    
+    func dropPin(at location: CLLocation) {
+        let pin: MKPointAnnotation = MKPointAnnotation()
+        pin.coordinate = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
+        generateTitle(for: location) { result in
+            pin.title = result
+            self.mapView.addAnnotation(pin)
+        }
+    }
 }
-
-//// MARK: - MKMapViewDelegate
-//extension ViewController: MKMapViewDelegate {
-//
-//}
 
 // MARK: - CLLocationManagerDelegate
 extension ViewController: CLLocationManagerDelegate {
@@ -78,11 +106,16 @@ extension ViewController: CLLocationManagerDelegate {
         guard let currentLocation = locations.first else {
             return
         }
-        
 
         let currentCoordinate = CLLocationCoordinate2D(latitude: currentLocation.coordinate.latitude, longitude: currentLocation.coordinate.longitude)
         let currentRegion = MKCoordinateRegion(center: currentCoordinate, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01))
         mapView.setRegion(currentRegion, animated: true)
+        
+        clearPins()
+        dropPin(at: currentLocation)
+        generateTitle(for: currentLocation) { result in
+            self.locationTitle = result
+        }
     }
     
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
