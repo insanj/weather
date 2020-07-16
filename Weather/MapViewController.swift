@@ -1,5 +1,5 @@
 //
-//  ViewController.swift
+//  MapViewController.swift
 //  Weather
 //
 //  Created by Julian Weiss on 7/16/20.
@@ -10,7 +10,7 @@ import UIKit
 import MapKit
 import CoreLocation
 
-class ViewController: UIViewController {
+class MapViewController: UIViewController {
     // MARK: - properties
     // backend
     let locationManager: CLLocationManager = {
@@ -27,9 +27,12 @@ class ViewController: UIViewController {
     // frontend
     let mapView: MKMapView = {
         let map = MKMapView()
+        map.isZoomEnabled = false
         map.translatesAutoresizingMaskIntoConstraints = false
         return map
     }()
+    
+    let tapGestureRecognizer = UITapGestureRecognizer()
     
     // MARK: - funcs
     override func viewDidLoad() {
@@ -43,11 +46,18 @@ class ViewController: UIViewController {
         locationManager.delegate = self
         
         // add map view
+        mapView.delegate = self
         view.addSubview(mapView)
         mapView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
         mapView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
         mapView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
         mapView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
+        
+        // add gesture recognizers
+        tapGestureRecognizer.addTarget(self, action: #selector(handleTapGestureRecognized(sender:)))
+        tapGestureRecognizer.numberOfTapsRequired = 2
+        tapGestureRecognizer.numberOfTouchesRequired = 1
+        mapView.addGestureRecognizer(tapGestureRecognizer)
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -58,31 +68,31 @@ class ViewController: UIViewController {
     }
 }
 
+// MARK: - ux handlers
+extension MapViewController {
+    @objc func handleTapGestureRecognized(sender: UITapGestureRecognizer) {
+        guard sender.state == .ended else {
+            return
+        }
+        
+        let point = sender.location(in: mapView)
+        let coordinate = mapView.convert(point, toCoordinateFrom: mapView)
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        dropPin(at: location)
+        
+        let weatherViewController = WeatherViewController(location)
+        let modalNavigationController = UINavigationController(rootViewController: weatherViewController)
+        navigationController?.present(modalNavigationController, animated: true, completion: nil)
+    }
+}
+
 // MARK: - update functions
-extension ViewController {
+extension MapViewController {
     func refreshLocation() {
         locationManager.requestAlwaysAuthorization()
 
         if CLLocationManager.locationServicesEnabled() {
             locationManager.startUpdatingLocation()
-        }
-    }
-    
-    func generateTitle(for location: CLLocation,_ callback: @escaping (String) -> (Void)) {
-        let geoCoder = CLGeocoder()
-        geoCoder.reverseGeocodeLocation(location) { (placemarks, error) -> Void in
-            guard let placemark = placemarks?.first else {
-                callback("")
-                return
-            }
-            
-            guard let name = placemark.name, let city = placemark.locality else {
-                callback("")
-                return
-            }
-            
-            let title = "\(name), \(city)"
-            callback(title)
         }
     }
     
@@ -93,15 +103,28 @@ extension ViewController {
     func dropPin(at location: CLLocation) {
         let pin: MKPointAnnotation = MKPointAnnotation()
         pin.coordinate = CLLocationCoordinate2DMake(location.coordinate.latitude, location.coordinate.longitude)
-        generateTitle(for: location) { result in
+        Helper.generateTitle(for: location) { result in
             pin.title = result
             self.mapView.addAnnotation(pin)
         }
     }
 }
 
+extension MapViewController: MKMapViewDelegate {
+    func mapView(_ mapView: MKMapView, didSelect view: MKAnnotationView) {
+        guard let coordinate = view.annotation?.coordinate else {
+            return
+        }
+        
+        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+        let weatherViewController = WeatherViewController(location)
+        let modalNavigationController = UINavigationController(rootViewController: weatherViewController)
+        navigationController?.present(modalNavigationController, animated: true, completion: nil)
+    }
+}
+
 // MARK: - CLLocationManagerDelegate
-extension ViewController: CLLocationManagerDelegate {
+extension MapViewController: CLLocationManagerDelegate {
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         guard let currentLocation = locations.first else {
             return
@@ -113,7 +136,7 @@ extension ViewController: CLLocationManagerDelegate {
         
         clearPins()
         dropPin(at: currentLocation)
-        generateTitle(for: currentLocation) { result in
+        Helper.generateTitle(for: currentLocation) { result in
             self.locationTitle = result
         }
     }
