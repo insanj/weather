@@ -15,6 +15,8 @@
 		1E13F10F24C0E884000ED438 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1E13F10E24C0E884000ED438 /* CoreLocation.framework */; };
 		1E13F11124C0ED84000ED438 /* WeatherViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E13F11024C0ED84000ED438 /* WeatherViewController.swift */; };
 		1E13F11324C0EE75000ED438 /* Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E13F11224C0EE75000ED438 /* Helper.swift */; };
+		1E13F11524C0F037000ED438 /* OpenWeatherMapNetworker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E13F11424C0F037000ED438 /* OpenWeatherMapNetworker.swift */; };
+		1E13F11724C0F65A000ED438 /* WeatherMetadataCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E13F11624C0F65A000ED438 /* WeatherMetadataCell.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -28,6 +30,8 @@
 		1E13F10E24C0E884000ED438 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		1E13F11024C0ED84000ED438 /* WeatherViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherViewController.swift; sourceTree = "<group>"; };
 		1E13F11224C0EE75000ED438 /* Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Helper.swift; sourceTree = "<group>"; };
+		1E13F11424C0F037000ED438 /* OpenWeatherMapNetworker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenWeatherMapNetworker.swift; sourceTree = "<group>"; };
+		1E13F11624C0F65A000ED438 /* WeatherMetadataCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeatherMetadataCell.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -67,6 +71,8 @@
 				1E13F0F724C0E4C1000ED438 /* AppDelegate.swift */,
 				1E13F0FB24C0E4C1000ED438 /* MapViewController.swift */,
 				1E13F11024C0ED84000ED438 /* WeatherViewController.swift */,
+				1E13F11624C0F65A000ED438 /* WeatherMetadataCell.swift */,
+				1E13F11424C0F037000ED438 /* OpenWeatherMapNetworker.swift */,
 				1E13F10024C0E4C3000ED438 /* Assets.xcassets */,
 				1E13F10224C0E4C3000ED438 /* LaunchScreen.storyboard */,
 				1E13F10524C0E4C3000ED438 /* Info.plist */,
@@ -154,6 +160,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				1E13F11324C0EE75000ED438 /* Helper.swift in Sources */,
+				1E13F11724C0F65A000ED438 /* WeatherMetadataCell.swift in Sources */,
+				1E13F11524C0F037000ED438 /* OpenWeatherMapNetworker.swift in Sources */,
 				1E13F0FC24C0E4C1000ED438 /* MapViewController.swift in Sources */,
 				1E13F11124C0ED84000ED438 /* WeatherViewController.swift in Sources */,
 				1E13F0F824C0E4C1000ED438 /* AppDelegate.swift in Sources */,
